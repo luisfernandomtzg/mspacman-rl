@@ -1,0 +1,31 @@
+# Pesos del modelo: viven en GitHub Releases, no en el repo
+*.zip
+!web/**/*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Entornos y secretos
+.env
+.env.*
+!.env.example
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+.vercel
+
+# Editores
+.idea/
+.vscode/
+.DS_Store
+
+# Artefactos de grabación en bruto
+/replay-raw/

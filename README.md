@@ -25,8 +25,14 @@ En el demo puedes ver, cuadro por cuadro, el valor que la red le asigna a cada u
 | --- | ---: | ---: |
 | Política aleatoria (línea base) | — | 202 |
 | DQN estándar | 50 mil | 434 ± 92 |
-| DDQN + reward shaping | 500 mil | 914 ± 138 |
-| **DDQN, servido correctamente** | 500 mil | **1 755 ± 392** |
+| DDQN, servido con el defecto de frameskip | 500 mil | 962 ± 166 |
+| **DDQN, servido correctamente** | 500 mil | **1 623 ± 576** |
+
+<sub>Los dos primeros renglones son del notebook (5 episodios). Los dos últimos se
+midieron aquí con 15 episodios cada uno y las versiones fijadas en <code>requirements.txt</code>;
+el notebook había reportado 914 ± 138 para el tercer renglón con versiones anteriores.
+Las repeticiones del demo se grabaron con el pipeline puro de entrenamiento, que sobre
+15 episodios da 1 408 ± 512 — consistente dentro de una desviación.</sub>
 
 Los dos últimos renglones son **el mismo modelo**. La diferencia no fue reentrenar: fue
 descubrir que se estaba sirviendo mal. Está documentado en [`docs/frameskip.md`](docs/frameskip.md)
@@ -69,13 +75,13 @@ modificada habría inflado el número.
 ## Correrlo
 
 ```bash
-git clone https://github.com/USUARIO/mspacman-rl.git
+git clone https://github.com/luisfernandomtzg/mspacman-rl.git
 cd mspacman-rl
 pip install -r requirements.txt
 ```
 
 Los pesos (27 MB) se descargan solos desde
-[Releases](https://github.com/USUARIO/mspacman-rl/releases) la primera vez.
+[Releases](https://github.com/luisfernandomtzg/mspacman-rl/releases) la primera vez.
 
 ```bash
 # Reproducir la comparación de pipelines de la tabla

@@ -12,11 +12,12 @@
   ],
   "fps": 60,
   "resumen": {
-    "episodios": 12,
-    "media": 1755.0,
-    "desviacion": 391.8,
+    "episodios": 15,
+    "media": 1408.0,
+    "desviacion": 511.8,
     "mejor": 2060.0,
-    "peor": 900.0
+    "peor": 680.0,
+    "todos_distintos": true
   },
   "episodios": [
     {
@@ -27,9 +28,9 @@
       ],
       "traza": "ep1.json",
       "score": 2060.0,
-      "decisiones": 470,
-      "frames": 1891,
-      "seed": 11
+      "decisiones": 602,
+      "frames": 2417,
+      "seed": 33
     },
     {
       "id": 2,
@@ -38,10 +39,10 @@
         "ep2.mp4"
       ],
       "traza": "ep2.json",
-      "score": 2060.0,
-      "decisiones": 602,
-      "frames": 2426,
-      "seed": 66
+      "score": 1340.0,
+      "decisiones": 637,
+      "frames": 2560,
+      "seed": 111
     },
     {
       "id": 3,
@@ -50,10 +51,10 @@
         "ep3.mp4"
       ],
       "traza": "ep3.json",
-      "score": 2060.0,
-      "decisiones": 470,
-      "frames": 1909,
-      "seed": 77
+      "score": 730.0,
+      "decisiones": 548,
+      "frames": 2206,
+      "seed": 555
     }
   ]
 }

@@ -101,20 +101,47 @@ def main() -> None:
     args.salida.mkdir(parents=True, exist_ok=True)
 
     modelo = cargar()
-    resultados = []
-    for i, seed in enumerate(SEEDS[: args.episodios], 1):
+
+    # Sembrar NO garantiza episodios distintos. Con política determinista la única
+    # variación del entorno es el número de no-ops del reset, y semillas distintas
+    # caen en el mismo arranque con frecuencia: en una corrida de 12, las semillas
+    # 11, 44 y 77 dieron la MISMA partida, acción por acción. Promediar sobre
+    # duplicados infla la confianza y aprieta la desviación artificialmente.
+    # Por eso se firma cada episodio por su secuencia de acciones y se descartan
+    # los repetidos, probando semillas nuevas hasta juntar los que se pidieron.
+    # Ver docs/frameskip.md.
+    resultados, vistas, descartados = [], set(), 0
+    for seed in SEEDS:
+        if len(resultados) >= args.episodios:
+            break
         r = grabar_episodio(modelo, seed)
+        firma = tuple(paso["a"] for paso in r["traza"])
+        if firma in vistas:
+            descartados += 1
+            print(f"   (semilla {seed:3d}: duplicado de una partida ya grabada, se descarta)")
+            continue
+        vistas.add(firma)
         resultados.append(r)
-        print(f"ep {i:2d} (seed {seed:3d}): {r['score']:7.0f} pts | "
+        print(f"ep {len(resultados):2d} (seed {seed:3d}): {r['score']:7.0f} pts | "
               f"{len(r['traza']):4d} decisiones | {len(r['frames'])/60:5.1f}s")
 
-    puntajes = np.array([r["score"] for r in resultados])
-    print(f"\nmedia {puntajes.mean():.1f} ± {puntajes.std():.1f} en {len(puntajes)} episodios")
+    if len(resultados) < args.episodios:
+        print(f"\nAVISO: se pidieron {args.episodios} episodios distintos y solo se "
+              f"consiguieron {len(resultados)} con las {len(SEEDS)} semillas disponibles. "
+              f"Amplía SEEDS antes de reportar la media.")
 
+    puntajes = np.array([r["score"] for r in resultados])
+    print(f"\nmedia {puntajes.mean():.1f} ± {puntajes.std():.1f} en {len(puntajes)} "
+          f"episodios verificadamente distintos ({descartados} duplicados descartados)")
+
+    # Se guardan el mejor, uno intermedio y uno bajo: enseñar solo los tres mejores
+    # daría una impresión del agente que la media no respalda.
     resultados.sort(key=lambda r: -r["score"])
+    if len(resultados) >= 3:
+        resultados = [resultados[0], resultados[len(resultados) // 2], resultados[-1]] + resultados[1:-1]
     manifiesto = {
         "acciones": list(ACCIONES), "fps": 60,
-        "resumen": {"episodios": len(puntajes), "media": round(float(puntajes.mean()), 1),
+        "resumen": {"episodios": len(puntajes), "todos_distintos": True, "media": round(float(puntajes.mean()), 1),
                     "desviacion": round(float(puntajes.std()), 1),
                     "mejor": float(puntajes.max()), "peor": float(puntajes.min())},
         "episodios": [],

@@ -4,8 +4,8 @@ import manifiesto from "@/public/replay/manifiesto.json";
 const RESULTADOS = [
   { agente: "Aleatorio (línea base)", pasos: "—", score: "202", nota: "5 episodios" },
   { agente: "DQN estándar", pasos: "50 mil", score: "434 ± 92", nota: "5 episodios" },
-  { agente: "DDQN + reward shaping", pasos: "500 mil", score: "914 ± 138", nota: "10 episodios, servido con el defecto de frameskip" },
-  { agente: "DDQN, servido correctamente", pasos: "500 mil", score: "1 755 ± 392", nota: "12 episodios, mismo modelo sin reentrenar", destacado: true },
+  { agente: "DDQN, servido con el defecto de frameskip", pasos: "500 mil", score: "962 ± 166", nota: "15 episodios" },
+  { agente: "DDQN, servido correctamente", pasos: "500 mil", score: "1 623 ± 576", nota: "15 episodios, mismo modelo sin reentrenar", destacado: true },
 ];
 
 export default function Pagina() {
@@ -60,7 +60,7 @@ export default function Pagina() {
           El objetivo de referencia del DQN original de DeepMind en Ms. Pac-Man ronda los
           2 500 puntos con 200 millones de pasos. Este agente entrenó 500 mil —{" "}
           <strong className="font-semibold text-tinta">400 veces menos</strong> — y llega a
-          ~1 755. No supera la referencia, y decirlo importa más que adornar el número.
+          ~1 620. No supera la referencia, y decirlo importa más que adornar el número.
         </p>
       </section>
 
@@ -90,7 +90,7 @@ export default function Pagina() {
       <footer className="border-t border-borde pt-6 text-sm text-tenue">
         <p className="m-0">
           Luis Fernando Martínez González ·{" "}
-          <a className="text-azul underline-offset-2 hover:underline" href="https://github.com/USUARIO/mspacman-rl">
+          <a className="text-azul underline-offset-2 hover:underline" href="https://github.com/luisfernandomtzg/mspacman-rl">
             Código y método en GitHub
           </a>{" "}
           ·{" "}

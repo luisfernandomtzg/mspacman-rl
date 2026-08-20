@@ -69,9 +69,42 @@ cada corrida de CI. Si alguien reconstruye el entorno con el atajo, la prueba fa
 pytest tests -q
 ```
 
+## Un segundo defecto, encontrado al verificar este
+
+Al revisar las repeticiones grabadas resultó que dos de tres eran **el mismo episodio**:
+470 acciones idénticas al 100 %. Doce "episodios" no eran doce muestras independientes,
+y la media de 1 755 ± 392 que se reportó primero no era una estadística válida.
+
+La primera hipótesis fue que la semilla no llegaba al emulador. **Era falsa**, y la prueba
+que la habría respaldado pasaba igual con y sin el supuesto arreglo — por eso se mutó el
+código a propósito antes de darla por buena. La medición real:
+
+| Forma de sembrar | Trayectorias únicas (12 semillas) | Colisiones |
+| --- | ---: | --- |
+| `VecEnv.seed(s)` | 10/12 | 11, 44, 77 |
+| `reset(seed=s)` | 11/12 | 44, 99 |
+
+Ambas siembran correctamente y ambas son reproducibles. Ambas colisionan.
+
+**La causa real:** con una política determinista, la única fuente de variación del
+entorno es el número aleatorio de no-ops que `AtariPreprocessing` ejecuta en el reset —
+un entero en un rango de unas decenas. Dos semillas que caen en el mismo arranque generan
+la partida idéntica, incluidas las repeticiones pegajosas de acción, porque el flujo
+aleatorio también parte del mismo punto. Con 12 semillas sobre ~30 arranques posibles,
+que haya colisiones es lo esperable, no la excepción.
+
+**La corrección** no es otra forma de sembrar: es no confiar en la semilla. `record.py`
+firma cada episodio por su secuencia completa de acciones, descarta los repetidos y sigue
+probando semillas hasta juntar el número pedido de partidas distintas. Funciona sin
+importar de dónde venga la colisión.
+
+Las 15 repeticiones finales son 15 trayectorias verificadamente únicas, con puntajes de
+680 a 2 060: media **1 408 ± 512**. La desviación subió de 392 a 512 — la variación real
+del agente siempre estuvo ahí, los duplicados la escondían.
+
 ## Lo que queda
 
 Corregir el servicio no arregla el entrenamiento: el agente **se entrenó** con el pipeline
-correcto, así que 1 755 es su techo real con 500 mil pasos. Sigue lejos de los ~2 500 de
+correcto, así que ~1 620 es su techo real con 500 mil pasos. Sigue lejos de los ~2 500 de
 la referencia de DeepMind, que se obtienen con 200 millones de pasos. La diferencia es
 presupuesto de cómputo, no un defecto.

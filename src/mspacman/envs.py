@@ -90,6 +90,12 @@ def make_vec_env(*, seed: int | None = None, **kwargs) -> VecEnv:
     """El entorno vectorizado y apilado que espera el modelo: (84, 84, 4)."""
     venv = DummyVecEnv([lambda: make_env(**kwargs)])
     if seed is not None:
+        # Sembrar hace la corrida reproducible, pero NO garantiza que dos semillas
+        # distintas den partidas distintas: con política determinista la única
+        # variación del entorno es el número de no-ops del reset, y semillas
+        # distintas caen en el mismo arranque con frecuencia. Quien necesite
+        # episodios independientes debe verificar unicidad, no confiar en la
+        # semilla. Ver `record.py` y docs/frameskip.md.
         venv.seed(seed)
     return VecFrameStack(venv, n_stack=N_STACK)
 

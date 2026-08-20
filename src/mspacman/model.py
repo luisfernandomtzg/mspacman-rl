@@ -13,7 +13,7 @@ PESOS = "ddqn_mspacman_500k.zip"
 #: y no depende de una cuenta personal ni de límites de descarga.
 URL_PESOS = os.environ.get(
     "MSPACMAN_WEIGHTS_URL",
-    "https://github.com/USUARIO/mspacman-rl/releases/download/v1.0.0/" + PESOS,
+    "https://github.com/luisfernandomtzg/mspacman-rl/releases/download/v1.0.0/" + PESOS,
 )
 
 

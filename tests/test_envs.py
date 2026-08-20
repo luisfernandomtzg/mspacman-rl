@@ -54,3 +54,43 @@ def test_el_episodio_avanza_y_termina(venv):
             break
     else:
         pytest.skip("200 pasos sin terminar: válido, el episodio es largo")
+
+
+def test_la_semilla_es_reproducible():
+    """La misma semilla debe reproducir la misma partida."""
+    def huella(seed: int) -> bytes:
+        v = make_vec_env(seed=seed)
+        obs = v.reset()
+        acumulado = [int(obs.sum())]
+        for _ in range(40):
+            obs, _, done, _ = v.step(np.array([0]))
+            acumulado.append(int(obs.sum()))
+            if done[0]:
+                break
+        v.close()
+        return np.asarray(acumulado, dtype=np.int64).tobytes()
+
+    assert huella(7) == huella(7)
+
+
+def test_semillas_distintas_pueden_colisionar():
+    """Documenta, en código ejecutable, por qué no basta con sembrar.
+
+    Con política determinista la única variación del entorno es el número de
+    no-ops del reset. Semillas distintas caen en el mismo arranque con
+    frecuencia y producen la partida idéntica. Este es el defecto que hizo que
+    dos de tres repeticiones grabadas fueran el mismo episodio.
+
+    La prueba NO exige que colisionen — exige que quien grabe episodios no
+    asuma que semillas distintas bastan. `record.py` verifica unicidad por
+    firma de trayectoria; `test_el_grabador_descarta_duplicados` lo cubre.
+    """
+    huellas = set()
+    for seed in range(12):
+        v = make_vec_env(seed=seed)
+        huellas.add(int(v.reset().sum()))
+        v.close()
+
+    assert len(huellas) <= 12
+    if len(huellas) == 12:
+        pytest.skip("Estas 12 semillas no colisionaron; el riesgo sigue existiendo.")

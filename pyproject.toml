@@ -1,0 +1,14 @@
+# Configuracion de herramientas. El proyecto no se empaqueta: no hay
+# [build-system] a proposito, se ejecuta con PYTHONPATH=src.
+
+[tool.ruff]
+target-version = "py311"   # la version que corre el CI
+line-length = 120
+
+[tool.ruff.lint]
+# Se fija el conjunto de reglas en vez de heredar los defaults de ruff.
+# requirements-dev.txt pide `ruff>=0.6` sin techo, y los defaults de ruff
+# cambian entre versiones: con 0.16 se ampliaron a I, B, PERF, RUF... y
+# `ruff check src tests` empezo a fallar sin que cambiara una linea de codigo.
+# Fijar `select` hace que el lint dependa del repo, no de que ruff instalo pip.
+select = ["E", "F"]        # pycodestyle (errores) + pyflakes

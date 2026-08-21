@@ -19,3 +19,19 @@ jobs:
         run: ruff check src tests
       - name: Pruebas del entorno
         run: pytest tests -q
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Instalar dependencias
+        working-directory: web
+        run: npm ci
+      - name: Compilar el demo
+        working-directory: web
+        run: npm run build
